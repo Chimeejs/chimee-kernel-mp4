@@ -2,10 +2,10 @@
 
 ## Installation
 ```
-npm install --save chimee-kernel-flv
+npm install --save chimee-kernel-mp4
 ```
 ## Usage
 ```
-import kernelFlv from 'chimee-kernel-flv'
+import kernelMp4 from 'chimee-kernel-mp4'
 
 ```
