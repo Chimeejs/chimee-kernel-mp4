@@ -199,6 +199,7 @@ export default class Transmuxer extends CustEvent {
    * destroy
    */
   destroy () {
+    this.CPU.distroy();
     this.loader.destroy();
     this.loader = null;
     this.CPU = null;

@@ -9,7 +9,8 @@ export default class Mp4decode extends CustEvent {
 	}
 
 	bindEvent() {
-		this.mp4box.onReady = (info)=> {
+		const mp4box = this.mp4box;
+		mp4box.onReady = (info)=> {
 			const mediainfo = {
 				data: {
 					width: info.videoTracks[0].track_width || 0,
@@ -21,28 +22,29 @@ export default class Mp4decode extends CustEvent {
 			}
 			this.onMediaInfo(mediainfo);
 			info.tracks.forEach((item)=>{
-				this.mp4box.setSegmentOptions(item.id, item.type); 
+				mp4box.setSegmentOptions(item.id, item.type); 
 			})
 			
-			const initSegs = this.mp4box.initializeSegmentation();
+			const initSegs = mp4box.initializeSegmentation();
 			initSegs.forEach((item)=>{
 				this.onInitMediaSegment({type: item.user, buffer: item.buffer});
 			})
 		}
 
-		this.mp4box.onError = (e)=> {
+		mp4box.onError = (e)=> {
 			console.log(e);
 		};
-		this.mp4box.onSegment = (id, user, buffer, sampleNum)=>{
-			this.onMediaSegment({type: user, buffer: buffer});
+		mp4box.onSegment = (id, user, buffer, sampleNum)=>{
+			this.onMediaSegment({type: user, buffer: buffer, sampleNum: sampleNum});
+			mp4box.releaseUsedSamples(id, sampleNum);
 		}
-		this.mp4box.onSamples = (id)=>{
+		mp4box.onSamples = (id)=>{
 			console.log(2);
 		}
-		this.mp4box.onItem = (id)=>{
+		mp4box.onItem = (id)=>{
 			console.log(3);
 		}
-		this.mp4box.start();
+		mp4box.start();
 	}
 
 	sendBuffer(data) {
@@ -50,6 +52,10 @@ export default class Mp4decode extends CustEvent {
 	}
 
 	seek(time, useRap) {
+		this.mp4box.flush();
 		return this.mp4box.seek(time, useRap);
+	}
+	distroy() {
+		this.mp4box.flush();
 	}
 }
