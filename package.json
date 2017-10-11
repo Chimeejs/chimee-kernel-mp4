@@ -49,6 +49,7 @@
     "mp4box": "^0.3.15",
     "rollup": "^0.43.0",
     "rollup-plugin-babel": "^2.7.1",
+    "rollup-plugin-bundle-worker": "^0.1.0",
     "rollup-plugin-commonjs": "^8.0.2",
     "rollup-plugin-includepaths": "^0.2.2",
     "rollup-plugin-livereload": "^0.4.0",

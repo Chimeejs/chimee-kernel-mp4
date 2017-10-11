@@ -2,8 +2,7 @@ import IoLoader from '../io/io-loader';
 import {CustEvent} from 'chimee-helper';
 import {Log} from 'chimee-helper';
 import Mp4decode from '../mp4decode';
-
-
+import TransmuxerWorker from 'worker!./transmuxer-worker.js';
 /**
  * Transmuxer 控制层
  * @class Transmuxer
@@ -21,11 +20,20 @@ export default class Transmuxer extends CustEvent {
     this.w = null;
     Object.assign(this.config, config);
     if(this.config.webWorker) {
-      this.w = work('./transmuxer-worker');
-      this.w.postMessage({cmd: 'init'});
+      
+      this.w = new TransmuxerWorker();
+
+      // const s = transmuxerWorker.toString();
+      // const blob = new Blob([s], {type: 'text/javascript'});
+      // this.w = new Worker(window.URL.createObjectURL(blob));
+
+      // this.w = work('./transmuxer-worker');
+      // this.w.postMessage({cmd: 'init'});
       this.w.addEventListener('message', (e) => {
+        console.log(e);
         this.parseCallback(e.data);
       });
+      this.w.postMessage({cmd: 'init'});
     }
 	}
    /**
@@ -172,7 +180,6 @@ export default class Transmuxer extends CustEvent {
    */
   seek (time) {
     const seek_info = this.CPU.seek(time);
-    console.log(seek_info);
     this.loader = new IoLoader(this.config);
     this.loader.arrivalDataCallback = this.arrivalDataCallback.bind(this);
     this.loader.seek(seek_info.offset, false);

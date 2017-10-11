@@ -15,13 +15,11 @@
 	// flv点播 http://yunxianchang.live.ujne7.com/vod-system-bj/TL1ce1196bce348070bfeef2116efbdea6.flv
 	// flv点播 http://yunxianchang.live.ujne7.com/vod-system-bj/TL2791e64b69ea0bea234c284c694986aa.flv
 	var player = document.querySelector('#player');
-	var Kernel = new chimeeKernelFlv(player,{
+	var Kernel = new chimeeKernelMp4(player,{
 	   src: 'http://yunxianchang.live.ujne7.com/vod-system-bj/107_381a7131a0e-6dde-455c-85d1-c53edc031453.mp4',
 	   box: 'mp4',
 	   isLive: false,
-	   preset: {
-	   	'flv': chimeeKernelFlv
-	   }
+	   webWorker: false
 	});
 
 	Kernel.load();

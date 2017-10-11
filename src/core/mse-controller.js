@@ -20,7 +20,6 @@ export default class MSEController extends CustEvent {
       onSourceClose: this.onSourceClose.bind(this),
       onSourceBufferError: this.onSourceBufferError.bind(this)
     };
-    this.queue = [];
     this.removeRangesList = {
       video: [],
       audio: []
@@ -42,8 +41,6 @@ export default class MSEController extends CustEvent {
       video: null,
       audio: null
     }
-    // this.mimeCodec = 'video/mp4; codecs="avc1.640020,mp4a.40.2"';
-    //this.init();
   }
 
   /**

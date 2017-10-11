@@ -2,6 +2,7 @@ import babel from 'rollup-plugin-babel';
 import resolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
 import replace from 'rollup-plugin-replace';
+import bundleWorker from 'rollup-plugin-bundle-worker';
 
 const {version, name, author, license, dependencies} = require('../package.json');
 const babelConfig = {
@@ -55,6 +56,7 @@ export default function (mode) {
       babel(babelConfig[mode]),
       resolve(),
       commonjs(),
+      bundleWorker(),
       replace({
         '__VERSION__': `'${version}'`
       })

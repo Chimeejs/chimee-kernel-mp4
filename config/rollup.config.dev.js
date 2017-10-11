@@ -17,6 +17,6 @@ config.plugins.push(
 export default Object.assign(config, {
   format: 'umd',
   dest: 'lib/index.dev.js',
-  moduleName: 'chimeeKernelFlv',
+  moduleName: 'chimeeKernelMp4',
   sourceMap: true
 });

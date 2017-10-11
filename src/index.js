@@ -31,9 +31,9 @@ export default class Flv extends CustEvent {
 
 	constructor (videodom, config) {
     super();
-    this.tag = 'FLV-player';
+    this.tag = 'MP4-player';
     this.video = videodom;
-    this.box = 'flv';
+    this.box = 'mp4';
     this.timer = null;
     this.config = deepAssign({}, defaultConfig, config);
     this.requestSetTime = false;
