@@ -1,58 +1,71 @@
-let CPU = null;
-let loader = null;
+import Mp4decode from '../mp4decode';
+import IoLoader from '../io/io-loader';
 
-this.addEventListener('message', function (e) {
-  console.log(e);
-  postMessage({a:111});
-  self.postMessage({a:111});
+export default function (self) {
+  let CPU = null;
+  let loader = null;
+  let config = {};
+  let cache = [];
+  self.addEventListener('message', function (e) {
+    // self.postMessage({a:111});
+    switch (e.data.cmd) {
+      case 'init':
+        config = e.data.data;
+      break;
+      case 'loadSource':
+        loader = new IoLoader(config);
+        loader.arrivalDataCallback = arrivalDataCallbackWorker;
+        loader.open();
+      break;
+      case 'pause':
+      console.log('rr pause');
+      loader.pause();
+      break;
+      case 'seek':
+      seek(e.data.time);
+      break;
+    };
+  });
 
-  switch (e.data.cmd) {
-    case 'init':
-      CPU = new Mp4decode();
-      CPU.onInitSegment = onRemuxerInitSegmentArrival.bind(this);
-      CPU.onMediaSegment = onRemuxerMediaSegmentArrival.bind(this);
-      CPU.onError = onCPUError.bind(this);
-      CPU.onMediaInfo = onMediaInfo.bind(this);
-      CPU.seekCallBack = seekCallBack.bind(this);
-    break;
-    case 'loadSource':
-      loader = new IoLoader(this.config);
-      loader.arrivalDataCallback = arrivalDataCallbackWorker;
-      loader.open();
-    break;
-    case 'pipe':
-    const consumed = CPU.setflv(e.data.source);
-    self.postMessage({cmd: 'pipeCallback', source: consumed});
-    break;
-    case 'seek':
-    CPU.seek(e.data.source);
-    break;
-  };
-});
-
-function onRemuxerInitSegmentArrival (type, initSegment) {
-  self.postMessage({cmd: 'mediaSegmentInit', source: initSegment});
-}
-
-function onRemuxerMediaSegmentArrival (type, initSegment) {
-  self.postMessage({cmd: 'mediaSegment', source: initSegment});
-}
-
-function onCPUError (error) {
-  self.postMessage({cmd: 'error', source: error});
-}
-
-function onMediaInfo (mediainfo) {
-  self.postMessage({cmd: 'mediainfo', source: mediainfo});
-}
-
-function seekCallBack () {
-}
-function arrivalDataCallbackWorker (data, byteStart, keyframePoint) {
-  if(keyframePoint) {
-    this.w.postMessage({cmd: 'seek', source: data});
+  function init() {
+    CPU = new Mp4decode();
+    CPU.onInitMediaSegment = onRemuxerInitSegmentArrival;
+    CPU.onMediaSegment = onRemuxerMediaSegmentArrival;
+    CPU.onError = onCPUError;
+    CPU.onMediaInfo = onMediaInfo;
   }
-  this.w.postMessage({cmd: 'pipe', source: data});
-  return;
-}
 
+  function onRemuxerInitSegmentArrival (data) {
+    self.postMessage({cmd: 'mediaSegmentInit', source: data});
+  }
+
+  function onRemuxerMediaSegmentArrival (data) {
+    self.postMessage({cmd: 'mediaSegment', source: data});
+  }
+
+  function onCPUError (error) {
+    self.postMessage({cmd: 'error', source: error});
+  }
+
+  function onMediaInfo (mediainfo) {
+    self.postMessage({cmd: 'mediainfo', source: mediainfo});
+  }
+
+  function seek (time) {
+    const seek_info = CPU.seek(time);
+    loader = new IoLoader(config);
+    loader.arrivalDataCallback = arrivalDataCallbackWorker;
+    loader.seek(seek_info.offset, false);
+  }
+  function arrivalDataCallbackWorker (data, byteStart, keyframePoint) {
+    if(!CPU) {
+      init();
+    }
+    // if(keyframePoint) {
+    //   this.keyframePoint = true;
+    //   CPU.seek(keyframePoint);
+    // }
+    var c = CPU.sendBuffer(data);
+    console.log(c);
+  }
+}

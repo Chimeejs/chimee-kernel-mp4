@@ -111,6 +111,7 @@ export default class Flv extends CustEvent {
 
     this.transmuxer.on('mediaSegment', (handle)=> {
       this.mediaSource.emit('mediaSegment', handle.data);
+      this.onmseUpdateEnd();
     });
     this.transmuxer.on('mediaSegmentInit', (handle)=> {
       this.mediaSource.emit('mediaSegmentInit', handle.data);
@@ -121,6 +122,7 @@ export default class Flv extends CustEvent {
     });
     this.transmuxer.on('mediaInfo', (mediaInfo)=>{
       if(!this.mediaInfo) {
+        
         this.mediaInfo = mediaInfo;
         this.emit('mediaInfo', mediaInfo);
         this.mediaSource.init(mediaInfo);
@@ -207,18 +209,15 @@ export default class Flv extends CustEvent {
    * mediaSource updateend
    */
   onmseUpdateEnd () {
-    setTimeout(()=>{
-      if (this.config.isLive) {
-        return;
-      }
-      const currentBufferEnd = this.getCurrentBufferEnd();
-      const currentTime = this.video.currentTime;
-      if (currentBufferEnd >= currentTime + this.config.lazyLoadMaxDuration && this.timer === null) {
-        Log.verbose(this.tag, 'Maximum buffering duration exceeded, suspend transmuxing task');
-        this.pauseTransmuxer();
-      }
-    },10)
-    
+    if (this.config.isLive) {
+      return;
+    }
+    const currentBufferEnd = this.getCurrentBufferEnd();
+    const currentTime = this.video.currentTime;
+    if (currentBufferEnd >= currentTime + this.config.lazyLoadMaxDuration && this.timer === null) {
+      Log.verbose(this.tag, 'Maximum buffering duration exceeded, suspend transmuxing task');
+      this.pauseTransmuxer();
+    }
   }
 
   /**

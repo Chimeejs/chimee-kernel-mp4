@@ -6,7 +6,7 @@
 <body>
 	<video id="player" controls="controls" width="800" height="500" autoplay></video>
 </body>
-<script type="text/javascript" src="/lib/index.dev.js"></script>
+<script src="/assets/index.js"></script>
 <script type="text/javascript">
 	// mp4 http://cdn.toxicjohann.com/lostStar.mp4
 	// hls http://yunxianchang.live.ujne7.com/vod-system-bj/44_176_20170224113626af3a75cd-3508-4bc3-b51f-366fca3c7e39.m3u8
@@ -14,12 +14,14 @@
 	// flv直播 http://flv.jia.360.cn/live_jia_public/_LC_RE_non_3605375765815007736131516144_BX.flv
 	// flv点播 http://yunxianchang.live.ujne7.com/vod-system-bj/TL1ce1196bce348070bfeef2116efbdea6.flv
 	// flv点播 http://yunxianchang.live.ujne7.com/vod-system-bj/TL2791e64b69ea0bea234c284c694986aa.flv
-	var player = document.querySelector('#player');
+	// mp4大文件 http://yunxianchang.live.ujne7.com/vod-system-bj/112_3965342e419-15b4-4be4-b7e4-6a152ee82d06.mp4
+	// MP4 快视频 http://pc.v.k.360kan.com/vod_zhushou/vod-shouzhu-bj/6a99dad3cd646ff4417ee8a4171c05f2.mp4?time=1508150261&sign=c40b8779a2f9f0ef97ebf0292ad4b56d
+ 	var player = document.querySelector('#player');
 	var Kernel = new chimeeKernelMp4(player,{
-	   src: 'http://yunxianchang.live.ujne7.com/vod-system-bj/107_381a7131a0e-6dde-455c-85d1-c53edc031453.mp4',
+	   src: 'http://yunxianchang.live.ujne7.com/vod-system-bj/112_3965342e419-15b4-4be4-b7e4-6a152ee82d06.mp4',
 	   box: 'mp4',
 	   isLive: false,
-	   webWorker: false
+	   webWorker: true
 	});
 
 	Kernel.load();

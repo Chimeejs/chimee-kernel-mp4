@@ -1,6 +1,6 @@
 import handleRange from './handleRange';
-import {CustEvent} from 'chimee-helper';
-import {Log} from 'chimee-helper';
+import {CustEvent} from 'chimee-helper-events';
+import Log from 'chimee-helper-log';
 
 export default class WebSocketLoader extends CustEvent {
 

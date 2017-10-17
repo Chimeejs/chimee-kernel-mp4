@@ -2,7 +2,8 @@ import IoLoader from '../io/io-loader';
 import {CustEvent} from 'chimee-helper';
 import {Log} from 'chimee-helper';
 import Mp4decode from '../mp4decode';
-import TransmuxerWorker from 'worker!./transmuxer-worker.js';
+import work from 'webworkify-webpack';
+
 /**
  * Transmuxer 控制层
  * @class Transmuxer
@@ -20,20 +21,13 @@ export default class Transmuxer extends CustEvent {
     this.w = null;
     Object.assign(this.config, config);
     if(this.config.webWorker) {
-      
-      this.w = new TransmuxerWorker();
-
-      // const s = transmuxerWorker.toString();
-      // const blob = new Blob([s], {type: 'text/javascript'});
+      // const blob = new Blob([TransmuxerWorker], {type: 'text/javascript'});
       // this.w = new Worker(window.URL.createObjectURL(blob));
-
-      // this.w = work('./transmuxer-worker');
-      // this.w.postMessage({cmd: 'init'});
+      this.w = work(require.resolve('./transmuxer-worker.js'));
       this.w.addEventListener('message', (e) => {
-        console.log(e);
-        this.parseCallback(e.data);
+        this.parseCallback.call(this,e.data);
       });
-      this.w.postMessage({cmd: 'init'});
+      this.w.postMessage({cmd: 'init', data: config});
     }
 	}
    /**
@@ -66,6 +60,7 @@ export default class Transmuxer extends CustEvent {
    *  @param {keyframePoint} 关键帧点
    */
   arrivalDataCallback (data, byteStart, keyframePoint) {
+    console.log(233);
     //this.emit('mediaSegment', data);
     let consumed = 0;
     if(!this.CPU) {
@@ -90,9 +85,6 @@ export default class Transmuxer extends CustEvent {
    */
   parseCallback (data) {
     switch(data.cmd) {
-      case 'pipeCallback':
-      data.source;
-      break;
       case 'mediaSegmentInit':
       this.emit('mediaSegmentInit', data.source);
       break;
@@ -100,7 +92,7 @@ export default class Transmuxer extends CustEvent {
       this.emit('mediaSegment', data.source);
       break;
       case 'mediainfo':
-      this.emit('mediainfo', data.source);
+      this.emit('mediaInfo', data.source);
       break;
     }
   }
@@ -159,7 +151,12 @@ export default class Transmuxer extends CustEvent {
    * stop loader
    */
   pause () {
-    this.loader.pause();
+    if(this.config.webWorker) {
+      console.log('send pause');
+      this.w.postMessage({cmd: 'pause'});
+    } else {
+      this.loader.pause();
+    }
   }
 
   /**
@@ -179,10 +176,16 @@ export default class Transmuxer extends CustEvent {
    * @param {object} 关键帧集合
    */
   seek (time) {
-    const seek_info = this.CPU.seek(time);
-    this.loader = new IoLoader(this.config);
-    this.loader.arrivalDataCallback = this.arrivalDataCallback.bind(this);
-    this.loader.seek(seek_info.offset, false);
+    if(this.config.webWorker) {
+      console.log('seek')
+      this.w.postMessage({cmd: 'seek', time: time});
+    } else {
+      const seek_info = this.CPU.seek(time);
+      this.loader = new IoLoader(this.config);
+      this.loader.arrivalDataCallback = this.arrivalDataCallback.bind(this);
+      this.loader.seek(seek_info.offset, false);
+    }
+    
   }
 
   /**

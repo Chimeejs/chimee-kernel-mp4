@@ -1,4 +1,4 @@
-import {CustEvent} from 'chimee-helper';
+import {CustEvent} from 'chimee-helper-events';
 import {MP4Box} from './core';
 
 export default class Mp4decode extends CustEvent {
@@ -36,19 +36,15 @@ export default class Mp4decode extends CustEvent {
 		};
 		mp4box.onSegment = (id, user, buffer, sampleNum)=>{
 			this.onMediaSegment({type: user, buffer: buffer, sampleNum: sampleNum});
-			mp4box.releaseUsedSamples(id, sampleNum);
-		}
-		mp4box.onSamples = (id)=>{
-			console.log(2);
-		}
-		mp4box.onItem = (id)=>{
-			console.log(3);
+			setTimeout(function() {
+				mp4box.releaseUsedSamples(id, sampleNum);
+			}, 10)
 		}
 		mp4box.start();
 	}
 
 	sendBuffer(data) {
-		this.mp4box.appendBuffer(data);
+		return this.mp4box.appendBuffer(data);
 	}
 
 	seek(time, useRap) {

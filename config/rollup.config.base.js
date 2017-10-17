@@ -2,7 +2,38 @@ import babel from 'rollup-plugin-babel';
 import resolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
 import replace from 'rollup-plugin-replace';
-//import bundleWorker from 'rollup-plugin-bundle-worker';
+// import { createFilter } from 'rollup-pluginutils';
+// import path from 'path';
+
+// function myPlugin ( options = {} ) {
+
+//   var filter = createFilter( options.include, options.exclude );
+//   return {
+//     name: 'workerfiy',
+//     transform ( code, id ) {
+//       if ( !filter( id ) ) return;
+//       if(id === '/Users/sgy/chimee/chimee-kernel-mp4/src/core/transmuxer-worker.js') {
+        
+//       }
+//       // proceed with the transformation...
+//     },
+//     load (id) {
+//      if(id= '/Users/sgy/chimee/chimee-kernel-mp4/src/core/transmuxer-worker.js') {
+
+//      }
+//     },
+//     resolveId(importee, importer) {
+//       if(importee.indexOf('webworkify!') !== -1) {
+//         var name = importee.split('!')[1],
+//             target = path.resolve(path.dirname(importer), name);
+//         return target;
+//       }
+//     },
+//     transformBundle(source, format) {
+      
+//     }
+//   };
+// }
 
 const {version, name, author, license, dependencies} = require('../package.json');
 const babelConfig = {
