@@ -4,11 +4,11 @@ import Transmuxer from './core/transmuxer';
 import defaultConfig from './config';
 import {throttle, deepAssign, Log, UAParser} from 'chimee-helper';
 /**
- * flv 控制层
+ * mp4 控制层
  * @export
  * @class mp4
  */
-export default class Flv extends CustEvent {
+export default class Mp4 extends CustEvent {
 
   static isSupport () {
 

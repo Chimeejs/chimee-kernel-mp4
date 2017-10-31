@@ -1,6 +1,6 @@
 export default {
   isLive: false, // 是否是直播
-  box: 'flv', // 容器
+  box: 'mp4', // 容器
   prestrain: 30, // 总是seek 到关键帧
   alwaysSeekKeyframe: true, // 总是seek 到关键帧
   lazyLoadMaxDuration: 2 * 60, //懒加载 最大播放长度

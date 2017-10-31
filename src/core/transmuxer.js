@@ -165,7 +165,7 @@ export default class Transmuxer extends CustEvent {
      this.loader.resume();
   }
    /**
-   * flv can seek
+   * mp4 can seek
    */
   isSeekable () {
     return this.mediaInfo.hasKeyframesIndex;
