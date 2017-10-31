@@ -84,7 +84,7 @@ export default class MSEController extends CustEvent {
     sb.addEventListener('error', this.e.onSourceBufferError);
     sb.addEventListener('abort', () => Log.verbose(this.tag, 'sourceBuffer: abort'));
     sb.addEventListener('updateend', () => {
-      if(this.queue[type].length > 0) {
+      //if(this.queue[type].length > 0) {
         if(!sb.updating) {
           if(this.needCleanupSourceBuffer(type)) {
             this.doCleanupSourceBuffer(type);
@@ -93,7 +93,7 @@ export default class MSEController extends CustEvent {
             this.appendBuffer(data, type);
           }
         }
-      }
+      //}
       this.emit('updateend');
     });
     this.doUpdate(type);
@@ -150,6 +150,13 @@ export default class MSEController extends CustEvent {
         if (currentTime - buffered.start(0) >= this.config.autoCleanupMaxBackwardDuration) {
             return true;
         }
+        for (let i = 0; i < buffered.length; i++) {
+          const start = buffered.start(i);
+          const end = buffered.end(i);
+          if( !(currentTime+3 > start &&  currentTime < end+3)) {
+            return true;
+          }
+        }
     }
     return false;
   }
@@ -166,17 +173,23 @@ export default class MSEController extends CustEvent {
     for (let i = 0; i < buffered.length; i++) {
       const start = buffered.start(i);
       const end = buffered.end(i);
-
-      if (start <= currentTime && currentTime < end + 3) {
-        if (currentTime - start >= this.config.autoCleanupMaxBackwardDuration) {
+      if(start < currentTime && currentTime < end) {
+        if (start <= currentTime && currentTime < end + 3) {
+          if (currentTime - start >= this.config.autoCleanupMaxBackwardDuration) {
+            doRemove = true;
+            const removeEnd = currentTime - this.config.autoCleanupMinBackwardDuration;
+            this.removeRangesList[type].push({start, end: removeEnd});
+          }
+        } else if (end < currentTime) {
           doRemove = true;
-          const removeEnd = currentTime - this.config.autoCleanupMinBackwardDuration;
-          this.removeRangesList[type].push({start, end: removeEnd});
+          this.removeRangesList[type].push({start, end});
         }
-      } else if (end < currentTime) {
+      } else {
         doRemove = true;
         this.removeRangesList[type].push({start, end});
       }
+
+      
     }
     if(doRemove && !this.sourceBuffer[type].updating) {
       this.cleanRangesList(type);

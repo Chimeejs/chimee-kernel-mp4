@@ -60,7 +60,6 @@ export default class Transmuxer extends CustEvent {
    *  @param {keyframePoint} 关键帧点
    */
   arrivalDataCallback (data, byteStart, keyframePoint) {
-    console.log(233);
     //this.emit('mediaSegment', data);
     let consumed = 0;
     if(!this.CPU) {

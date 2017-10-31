@@ -2552,6 +2552,7 @@ BoxParser.parseOneBox = function(stream, headerOnly, parentSize) {
 		return { code: BoxParser.ERR_NOT_ENOUGH_DATA };
 	}
 	var size = stream.readUint32();
+
 	var type = stream.readString(4);
 	Log.debug("BoxParser", "Found box of type "+type+" and size "+size+" at position "+start);
 	hdr_size = 8;
@@ -3329,7 +3330,6 @@ BoxParser.mvhdBox.prototype.parse = function(stream) {
 		this.timescale = stream.readUint32();
 		this.duration = stream.readUint32();
 	}
-  this.aaa = 1222;
 	this.rate = stream.readUint32();
 	this.volume = stream.readUint16()>>8;
 	stream.readUint16();
@@ -7162,7 +7162,6 @@ MP4Box.prototype.seekTrack = function(time, useRap, trak) {
 		Log.info("MP4Box", "No sample in track, cannot seek! Using time "+Log.getDurationString(0, 1) +" and offset: "+0);
 		return { offset: 0, time: 0 };
 	} 
-
 	for (j = 0; j < trak.samples.length; j++) {
 		sample = trak.samples[j];
 		if (j === 0) {
@@ -7183,6 +7182,9 @@ MP4Box.prototype.seekTrack = function(time, useRap, trak) {
 	trak.nextSample = seek_sample_num;
 	while (trak.samples[seek_sample_num].alreadyRead === trak.samples[seek_sample_num].size) {
 		seek_sample_num++;
+    if(!trak.samples[seek_sample_num]) {
+      break;
+    }
 	}
 	seek_offset = trak.samples[seek_sample_num].offset+trak.samples[seek_sample_num].alreadyRead;
 	Log.info("MP4Box", "Seeking to "+(useRap ? "RAP": "")+" sample #"+trak.nextSample+" on track "+trak.tkhd.track_id+", time "+Log.getDurationString(time, timescale) +" and offset: "+seek_offset);
