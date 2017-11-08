@@ -1,6 +1,6 @@
 import IoLoader from '../io/io-loader';
-import {CustEvent} from 'chimee-helper';
-import {Log} from 'chimee-helper';
+import {CustEvent} from 'chimee-helper-events';
+import Log from 'chimee-helper-log';
 import Mp4decode from '../mp4decode';
 import work from 'webworkify-webpack';
 
@@ -151,7 +151,6 @@ export default class Transmuxer extends CustEvent {
    */
   pause () {
     if(this.config.webWorker) {
-      console.log('send pause');
       this.w.postMessage({cmd: 'pause'});
     } else {
       this.loader.pause();
@@ -162,7 +161,11 @@ export default class Transmuxer extends CustEvent {
    * resume loader
    */
   resume () {
-     this.loader.resume();
+    if(this.config.webWorker) {
+      this.w.postMessage({cmd: 'resume'});
+    } else {
+      this.loader.pause();
+    }
   }
    /**
    * mp4 can seek
@@ -191,53 +194,27 @@ export default class Transmuxer extends CustEvent {
    * refresh
    */
   refresh () {
-    this.pause();
-    this.loader = new IoLoader(this.config);
-    this.loader.arrivalDataCallback = this.arrivalDataCallback.bind(this);
-    this.loader.open();
+    if(this.config.webWorker) {
+      this.w.postMessage({cmd: 'refresh'});
+    } else {
+      this.pause();
+      this.loader = new IoLoader(this.config);
+      this.loader.arrivalDataCallback = this.arrivalDataCallback.bind(this);
+      this.loader.open();
+    }
   }
 
   /**
    * destroy
    */
   destroy () {
-    this.CPU.distroy();
-    this.loader.destroy();
-    this.loader = null;
-    this.CPU = null;
-  }
-
-  /**
-   * get nearlest keyframe
-   */
-  getNearlestKeyframe (times) {
-    if(this.mediaInfo && this.mediaInfo.keyframesIndex) {
-      const keyframesList = this.mediaInfo.keyframesIndex.times;
-      const keyframesPositions = this.mediaInfo.keyframesIndex.filepositions;
-      const binarySearch = function (list, val) {
-        const length = list.length;
-        const index = Math.floor(length / 2);
-        if(length === 1) {
-          const position = keyframesList.indexOf(list[0]);
-          return {
-            keyframetime: list[0],
-            keyframePoint: keyframesPositions[position]
-          };
-        } else if(list[index] > val) {
-          return binarySearch(list.slice(0, index), val);
-        } else if (list[index] < val) {
-          return binarySearch(list.slice(index), val);
-        } else {
-          const position = keyframesList.indexOf(list[0]);
-          return {
-            keyframetime: list[0],
-            keyframePoint: keyframesPositions[position]
-          };
-        }
-      };
-      return binarySearch(keyframesList, times);
+    if(this.config.webWorker) {
+      this.w.postMessage({cmd: 'destroy'});
     } else {
-      return 0;
+      this.CPU.distroy();
+      this.loader.destroy();
+      this.loader = null;
+      this.CPU = null;
     }
   }
 }

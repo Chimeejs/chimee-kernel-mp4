@@ -107,12 +107,12 @@ export default class Mp4 extends CustEvent {
     }
     
     this.transmuxer = new Transmuxer(this.mediaSource, this.config);
-    
 
     this.transmuxer.on('mediaSegment', (handle)=> {
       this.mediaSource.emit('mediaSegment', handle.data);
       this.onmseUpdateEnd();
     });
+    
     this.transmuxer.on('mediaSegmentInit', (handle)=> {
       this.mediaSource.emit('mediaSegmentInit', handle.data);
     });
@@ -122,7 +122,6 @@ export default class Mp4 extends CustEvent {
     });
     this.transmuxer.on('mediaInfo', (mediaInfo)=>{
       if(!this.mediaInfo) {
-        
         this.mediaInfo = mediaInfo;
         this.emit('mediaInfo', mediaInfo);
         this.mediaSource.init(mediaInfo);
@@ -182,13 +181,14 @@ export default class Mp4 extends CustEvent {
     }
     // const buffered = this.video.buffered;
     if(this.isTimeinBuffered(currentTime)) {
-      if(this.config.alwaysSeekKeyframe) {
-        const nearlestkeyframe = this.transmuxer.getNearlestKeyframe(Math.floor(currentTime * 1000));
-        if (nearlestkeyframe) {
-          this.requestSetTime = true;
-          this.video.currentTime = nearlestkeyframe.keyframetime / 1000;
-        }
-      }
+      this.video.currentTime = currentTime;
+      // if(this.config.alwaysSeekKeyframe) {
+      //   const nearlestkeyframe = this.transmuxer.getNearlestKeyframe(Math.floor(currentTime * 1000));
+      //   if (nearlestkeyframe) {
+      //     this.requestSetTime = true;
+      //     this.video.currentTime = nearlestkeyframe.keyframetime / 1000;
+      //   }
+      // }
     } else {
       Log.verbose(this.tag, 'do seek');
       this.transmuxer.pause();
@@ -259,7 +259,7 @@ export default class Mp4 extends CustEvent {
   }
 
   resume () {
-
+    this._seek(0);
   }
 
   /**

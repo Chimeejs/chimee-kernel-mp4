@@ -195,6 +195,7 @@ export default class Ioloader extends CustEvent {
 	* seek
 	*/
   seek (bytes, dropCache, keyframePoint) {
+		this.totalReceive = bytes;
   	this.loader.open({from: bytes, to: -1}, keyframePoint);
   }
 

@@ -18,11 +18,19 @@ export default function (self) {
         loader.open();
       break;
       case 'pause':
-      console.log('rr pause');
       loader.pause();
       break;
       case 'seek':
       seek(e.data.time);
+      break;
+      case 'resume':
+      loader.resume();
+      break;
+      case 'refresh':
+      refresh();
+      break;
+      case 'destroy':
+      destroy();
       break;
     };
   });
@@ -57,15 +65,24 @@ export default function (self) {
     loader.arrivalDataCallback = arrivalDataCallbackWorker;
     loader.seek(seek_info.offset, false);
   }
+
+  function refresh () {
+    loader.pause();
+    loader = new IoLoader(config);
+    loader.arrivalDataCallback = arrivalDataCallbackWorker;
+    loader.open();
+  }
+
+  function destroy () {
+    loader.destroy();
+    loader = null;
+    CPU = null;
+  }
+
   function arrivalDataCallbackWorker (data, byteStart, keyframePoint) {
     if(!CPU) {
       init();
     }
-    // if(keyframePoint) {
-    //   this.keyframePoint = true;
-    //   CPU.seek(keyframePoint);
-    // }
     var c = CPU.sendBuffer(data);
-    console.log(c);
   }
 }
