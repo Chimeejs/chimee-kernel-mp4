@@ -29,20 +29,20 @@ export default class Mp4decode {
 		this[type.trim()]();
 	}
 
-	ftyp() {
+	ftyp(size) {
 		const uI = this.utilInstance;
-		let ftyp = {};
-		ftyp.major_brand = uI.readString(4);
-		ftyp.minor_version = uI.readUint32();
-		ftyp.compatible_brands = uI.readString(4);
-		return ftyp;
+		this.major_brand = uI.readString(4);
+		this.minor_version = uI.readUint32();
+		this.compatible_brands = [];
+		while(uI.position + 4 <= size) {
+			this.compatible_brands.push(uI.readString(4));
+		}
 	}
 
 	moov() {
-		//const uI = this.utilInstance;
-		// this.mvhd();
-		// this.iods();
-		// this.trak();
+		this.parseOneBox();
+		this.parseOneBox();
+		this.parseOneBox();
 		return "moov ContainerBox"
 	}
 
@@ -74,9 +74,20 @@ export default class Mp4decode {
 	}
 
 	trak() {
-		// const uI = this.utilInstance;
-		// this.tkhd();
-		// this.edts();
+		const uI = this.utilInstance;
+		let size = uI.readUint32();
+		let type = uI.readString(4);
+		// tkhd
+		this[type](size);
+		size = uI.readUint32();
+		type = uI.readString(4);
+		// edts
+		this[type](size);
+
+		size = uI.readUint32();
+		type = uI.readString(4);
+		// mdia
+		this[type](size);
 		return "trak ContainerBox"
 	}
 
@@ -106,12 +117,12 @@ export default class Mp4decode {
 		this.height = uI.readUint32();
 	}
 
-	edts() {
-		// const uI = this.utilInstance;
+	edts(size) {
+		const uI = this.utilInstance;
+		uI.position += size - 8;
 		// const size = uI.readUint32();
 		// const type = uI.readString(4);
 		// this.elst();
-		return "edts ContainerBox"
 	}
 
 	elst() {
@@ -135,7 +146,29 @@ export default class Mp4decode {
 	}
 
 	mdia() {
-		return "edts ContainerBox"
+		const uI = this.utilInstance;
+		let size = uI.readUint32();
+		let type = uI.readString(4);
+		// mdhd
+		console.log(type)
+		this[type](size);
+
+		size = uI.readUint32();
+	  type = uI.readString(4);
+		// hdlr
+		this[type](size);
+
+		size = uI.readUint32();
+	  type = uI.readString(4);
+		// minf
+		console.log(type)
+		this[type](size);
+
+		// size = uI.readUint32();
+		// type = uI.readString(4);
+		// console.log(type)
+		// const header = this.getHeader(uI);
+
 	}
 
 	mdhd() {
@@ -163,7 +196,7 @@ export default class Mp4decode {
 			uI.readUint32();
 			this.handler = uI.readString(4);
 			uI.readUint32Array(3);
-			this.name = uI.readString(size - 24);
+			this.name = uI.readString(size - 32);
 			if (this.name[this.name.length - 1] === '\0') {
 				this.name = this.name.slice(0, -1);
 			}
@@ -171,7 +204,31 @@ export default class Mp4decode {
 	}
 
 	minf() {
+		const uI = this.utilInstance;
+		console.log(uI.position);
+		let size = uI.readUint32();
+		let type = uI.readString(4);
+		console.log(type);
+		console.log(size);
+		// vmhd
+		this[type](size);
+		console.log(uI.position);
+
+
+		size = uI.readUint32();
+		type = uI.readString(4);
+		console.log(type)
+		// dinf
+		this[type](size);
+
 		return "minf ContainerBox"
+	}
+
+	vmhd() {
+		const uI = this.utilInstance;
+		const header = this.getHeader(uI);
+		this.graphicsmode = uI.readUint16();
+		this.opcolor = uI.readUint16Array(3);
 	}
 
 	// smhd() {
@@ -179,6 +236,24 @@ export default class Mp4decode {
 	// }
 
 	dinf() {
+		const uI = this.utilInstance;
+		// const header = this.getHeader(uI);
+		// this.entries = [];
+		// const entryCount = uI.readUint32();
+		// for (var i = 0; i < entry_count; i++) {
+		// 	ret = this.parseOneBox();
+		// 	if (ret.code === BoxParser.OK) {
+		// 		box = ret.box;
+		// 		this.entries.push(box);
+		// 	} else {
+		// 		return;
+		// 	}
+		// }
+
+		let size = uI.readUint32();
+		let type = uI.readString(4);
+		// dref
+		this[type](size);
 		return "dinf ContainerBox"
 	}
 
@@ -190,7 +265,10 @@ export default class Mp4decode {
 		this.entries = [];
 		var entry_count = uI.readUint32();
 		for (var i = 0; i < entry_count; i++) {
-			this.parseOneBox();
+			const size = uI.readUint32();
+			const type = uI.readString(4);
+			this[type.trim()](size);
+			// this.parseOneBox();
 			// ret = BoxParser.parseOneBox(stream, false, this.size - (stream.getPosition() - this.start));
 			// if (ret.code === BoxParser.OK) {
 			// 	box = ret.box;
@@ -202,10 +280,12 @@ export default class Mp4decode {
 	}
 
 	url() {
+		alert(1);
 		const uI = this.utilInstance;
 		const header = this.getHeader(uI);
 		if (header.flags !== 0x000001) {
 			this.location = uI.readCString();
+			console.log(this);
 		}
 	}
 

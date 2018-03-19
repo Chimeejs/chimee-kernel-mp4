@@ -46,7 +46,7 @@ export default class Ioloader extends CustEvent {
 
 		if(this.webSocketURLReg.test(url)) {
 			this.loader = new WebsocketLoader(url, config);
-		}else if(FetchLoader.isSupport()) {
+		}else if(!FetchLoader.isSupport()) {
 			this.loader = new FetchLoader(url, config);
 		} else if(MozChunkLoader.isSupport()) {
 			this.loader = new MozChunkLoader(url, config);

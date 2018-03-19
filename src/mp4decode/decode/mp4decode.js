@@ -20,14 +20,14 @@ export default class Mp4decode extends CustEvent {
 		this.position += ab.byteLength;
 		var index = 0;
 		const le = this._littleEndian;
-		window.ab = ab;
+		// window.ab = ab;
+		console.log(new Uint8Array(ab));
 		this.dataView = new DataView(ab);
 		const utilInstance = new Util(this.dataView);
 		const demux = new Mp4Demux(utilInstance);
-		while(index < 200 ) { // utilInstance.position > this.position
+		while(utilInstance.position < ab.byteLength) { // utilInstance.position > this.position
 			let size = utilInstance.readUint32();
 			let type = utilInstance.readString(4);
-			console.log(type);
 			if(demux[type]) {
 				demux[type](size);
 			} else {
@@ -35,6 +35,13 @@ export default class Mp4decode extends CustEvent {
 			}
 			index++;
 		}
-		
+	}
+
+	getBodySum(arr) {
+		let _str = '';
+		_str += (arr[0].toString(16).length == 1 ? '0' + arr[0].toString(16) : arr[0].toString(16));
+		_str += (arr[1].toString(16).length == 1 ? '0' + arr[1].toString(16) : arr[1].toString(16));
+		_str += (arr[2].toString(16).length == 1 ? '0' + arr[2].toString(16) : arr[2].toString(16));
+		return parseInt(_str, 16);
 	}
 }

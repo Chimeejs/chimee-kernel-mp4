@@ -1,12 +1,12 @@
 import {CustEvent} from 'chimee-helper-events';
-//import MP4Box from './decode/newcore';
-import {MP4Box} from './core';
+import MP4Box from './decode/newcore';
+//import {MP4Box} from './core';
 
 export default class Mp4decode extends CustEvent {
 	constructor() {
 		super();
 		this.mp4box = new MP4Box();
-		this.bindEvent();
+		// this.bindEvent();
 		this.index = 0;
 	}
 

@@ -64,17 +64,18 @@ export default class Transmuxer extends CustEvent {
     let consumed = 0;
     if(!this.CPU) {
       this.CPU = new Mp4decode();
-      this.CPU.onMediaSegment = this.onRemuxerMediaSegmentArrival.bind(this);
-      this.CPU.onInitMediaSegment = this.onRemuxerInitSegmentArrival.bind(this);
-      this.CPU.onMediaInfo = this.onMediaInfo.bind(this);
-      this.CPU.on('error', function(handle) {
-        this.emit('mp4box', handle.data);
-      })
+      // this.CPU.onMediaSegment = this.onRemuxerMediaSegmentArrival.bind(this);
+      // this.CPU.onInitMediaSegment = this.onRemuxerInitSegmentArrival.bind(this);
+      // this.CPU.onMediaInfo = this.onMediaInfo.bind(this);
+      // this.CPU.on('error', function(handle) {
+      //   this.emit('mp4box', handle.data);
+      // })
     }
     if(keyframePoint) {
       this.keyframePoint = true;
       this.CPU.seek(keyframePoint);
     }
+
     this.CPU.sendBuffer(data);
   }
 

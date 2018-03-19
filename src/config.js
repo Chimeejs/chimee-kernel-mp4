@@ -10,5 +10,6 @@ export default {
   webWorker: false, // 是否开启webworker
   autoCleanupSourceBuffer: true, //是否自动清除 sourcebuffer
   autoCleanupMaxBackwardDuration: 30, //清除sourcebuffer最大时间
-  autoCleanupMinBackwardDuration: 30 //清除sourcebuffer最小时间
+  autoCleanupMinBackwardDuration: 30, //清除sourcebuffer最小时间
+  p2pCacheBuffer: 50 * 1024 * 1024
 };

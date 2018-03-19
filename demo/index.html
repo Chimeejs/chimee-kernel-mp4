@@ -16,12 +16,13 @@
 	// flv点播 http://yunxianchang.live.ujne7.com/vod-system-bj/TL2791e64b69ea0bea234c284c694986aa.flv
 	// mp4大文件 http://yunxianchang.live.ujne7.com/vod-system-bj/112_3965342e419-15b4-4be4-b7e4-6a152ee82d06.mp4
 	// MP4 快视频 http://pc.v.k.360kan.com/vod_zhushou/vod-shouzhu-bj/6a99dad3cd646ff4417ee8a4171c05f2.mp4?time=1508150261&sign=c40b8779a2f9f0ef97ebf0292ad4b56d
+	// demo小视频 http://vod.live.baomitu.com/vod-yunxianchang-bj/TL1035339639a634c80934bdb4445397cb.mp4
  	var player = document.querySelector('#player');
 	var Kernel = new chimeeKernelMp4(player,{
-	   src: 'http://yunxianchang.live.ujne7.com/vod-system-bj/112_3965342e419-15b4-4be4-b7e4-6a152ee82d06.mp4',
+	   src: 'http://vod.live.baomitu.com/vod-yunxianchang-bj/100366086_4_mp4-1520867381-d17f8462-8a3d-f859.mp4',
 	   box: 'mp4',
 	   isLive: false,
-	   webWorker: true
+	   webWorker: false
 	});
 
 	Kernel.load();

@@ -50,6 +50,14 @@ export default class Util {
 		this.position += 4;
 		return value;
 	}
+	
+	readUint16Array (length, e) {
+		let arr = new Uint16Array(length);
+	  for (let i = 0; i < length; i++) {
+	    arr[i] = this.readUint16();
+	  }
+	  return arr;
+	};
 
 	readUint64() {
 		let res = this.readUint32() << 32;          
@@ -135,4 +143,6 @@ export default class Util {
 	  }
 	  return String.fromCharCode.apply(null, arr); 
 	}
+
+	
 }
